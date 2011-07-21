@@ -219,7 +219,7 @@ static void sysfs_refresh_inode(struct sysfs_dirent *sd, struct inode *inode)
 	}
 
 	if (sysfs_type(sd) == SYSFS_DIR)
-		set_nlink(inode, sd->s_dir.subdirs + 2);
+		inode->i_nlink = sd->s_dir.subdirs + 2;
 }
 
 int sysfs_getattr(struct vfsmount *mnt, struct dentry *dentry, struct kstat *stat)
