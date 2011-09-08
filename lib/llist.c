@@ -51,6 +51,8 @@ bool llist_add_batch(struct llist_node *new_first, struct llist_node *new_last,
 			break;
 		cpu_relax();
 	}
+
+	return old_entry == NULL;
 }
 EXPORT_SYMBOL_GPL(llist_add_batch);
 
