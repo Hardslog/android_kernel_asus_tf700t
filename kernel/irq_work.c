@@ -109,7 +109,8 @@ void irq_work_run(void)
 	llnode = llist_del_all(this_list);
 	while (llnode != NULL) {
 		work = llist_entry(llnode, struct irq_work, llnode);
-		llnode = llnode->next;
+
+		llnode = llist_next(llnode);
 
 		/*
 		 * Clear the PENDING bit, after this point the @work
