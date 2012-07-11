@@ -40,6 +40,9 @@
 		printk(KERN_INFO pr_fmt(fmt), ##__VA_ARGS__); \
 	}
 
+/* Bug 995270 */
+#define HACK_LA_FIFO 1
+
 static struct dentry *latency_debug_dir;
 static DEFINE_SPINLOCK(safety_lock);
 static unsigned short id_to_index[ID(MAX_ID) + 1];
@@ -135,19 +138,29 @@ int tegra_set_latency_allowance(enum tegra_la_id id,
 	int la_to_set;
 	unsigned long reg_read;
 	unsigned long reg_write;
+	unsigned int fifo_size_in_atoms;
 	int bytes_per_atom = normal_atom_size;
+	const int fifo_scale = 4;		/* 25% of the FIFO */
 	struct la_client_info *ci;
 	int idx = id_to_index[id];
 
 	VALIDATE_ID(id);
 	VALIDATE_BW(bandwidth_in_mbps);
 
-	ci = &la_info_array[idx];
+	ci = &la_info[id];
+	fifo_size_in_atoms = ci->fifo_size_in_atoms;
+
+#if HACK_LA_FIFO
+	/* pretend that our FIFO is only as deep as the lowest fullness
+	 * we expect to see */
+	if (id >= ID(DISPLAY_0A) && id <= ID(DISPLAY_HCB))
+		fifo_size_in_atoms /= fifo_scale;
+#endif
 
 	if (bandwidth_in_mbps == 0) {
 		la_to_set = MC_LA_MAX_VALUE;
 	} else {
-		ideal_la = (ci->fifo_size_in_atoms * bytes_per_atom * 1000) /
+		ideal_la = (fifo_size_in_atoms * bytes_per_atom * 1000) /
 			   (bandwidth_in_mbps * ns_per_tick);
 		la_to_set = ideal_la - (ci->expiration_in_ns/ns_per_tick) - 1;
 	}
@@ -157,11 +170,6 @@ int tegra_set_latency_allowance(enum tegra_la_id id,
 	la_to_set = (la_to_set < 0) ? 0 : la_to_set;
 	la_to_set = (la_to_set > MC_LA_MAX_VALUE) ? MC_LA_MAX_VALUE : la_to_set;
 	scaling_info[idx].actual_la_to_set = la_to_set;
-
-	/* until display can use latency allowance scaling, use a more
-	 * aggressive LA setting. Bug 862709 */
-	if (id >= ID(DISPLAY_0A) && id <= ID(DISPLAY_HCB))
-		la_to_set /= 3;
 
 	spin_lock(&safety_lock);
 	reg_read = readl(ci->reg_addr);
