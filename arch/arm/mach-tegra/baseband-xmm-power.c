@@ -71,7 +71,7 @@ static struct usb_device_id xmm_pm_ids[] = {
 	.driver_info = 0 },
 	{}
 };
-
+MODULE_DEVICE_TABLE(usb, xmm_pm_ids);
 
 static struct gpio tegra_baseband_gpios[] = {
 	{ -1, GPIOF_OUT_INIT_LOW,  "BB_RSTn" },
@@ -358,15 +358,11 @@ static int xmm_power_off(struct platform_device *device)
 		pr_err("%s: disable_irq_wake error\n", __func__);
 
 	/* unregister usb host controller */
-	if (pdata->hsic_unregister) {
-		if (!register_hsic_device) {
-			register_hsic_device = true;
-			pdata->hsic_unregister(data->hsic_device);
-		} else
-			pr_err("%s: hsic contorller was not registered\n", __func__);
-	} else
-		pr_err("%s: hsic_unregister is missing\n", __func__);
 
+	if (pdata->hsic_unregister)
+		pdata->hsic_unregister(&data->hsic_device);
+	else
+		pr_err("%s: hsic_unregister is missing\n", __func__);
 
 	/* set IPC_HSIC_ACTIVE low */
 	gpio_set_value(pdata->modem.xmm.ipc_hsic_active, 0);
@@ -1077,7 +1073,7 @@ static void xmm_device_remove_handler(struct usb_device *udev)
 		wake_lock_timeout(&modem_recovery_wakelock, HZ * 60);
 		pr_info("Remove device %d <%s %s>\n", udev->devnum,
 			udev->manufacturer, udev->product);
-		usbdev = 0;
+		usbdev = NULL;
 	}
 
 }
@@ -1347,7 +1343,7 @@ static int xmm_power_driver_remove(struct platform_device *device)
 
 	/* unregister usb host controller */
 	if (pdata->hsic_unregister)
-		pdata->hsic_unregister(data->hsic_device);
+		pdata->hsic_unregister(&data->hsic_device);
 	else
 		pr_err("%s: hsic_unregister is missing\n", __func__);
 
