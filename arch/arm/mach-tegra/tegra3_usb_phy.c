@@ -2256,6 +2256,7 @@ static int uhsic_phy_power_on(struct tegra_usb_phy *phy)
 {
 	unsigned long val;
 	void __iomem *base = phy->regs;
+
 	struct tegra_usb_host_mode_data *host = &phy->pdata->u_data.host;
 
 	DBG("%s(%d) inst:[%d]\n", __func__, __LINE__, phy->inst);
