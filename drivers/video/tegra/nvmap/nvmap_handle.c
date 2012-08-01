@@ -678,8 +678,9 @@ skip_attr_change:
 fail:
 	if (h->userflags & NVMAP_HANDLE_ZEROED_PAGES)
 		nvmap_free_pte(client->dev, pte);
-	while (i--) {
-		set_pages_array_wb(&pages[i], 1);
+	err = set_pages_array_wb(pages, i);
+	BUG_ON(err);
+	while (i--)
 		__free_page(pages[i]);
 	altfree(pages, nr_page * sizeof(*pages));
 	wmb();
