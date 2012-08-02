@@ -72,9 +72,6 @@ static struct mfd_cell tps65090s[] = {
 	{
 		.name = "tps65910-pmic",
 	},
-	{
-		.name = "tps65910-regulator",
-	},
 };
 
 struct tps65090 {
