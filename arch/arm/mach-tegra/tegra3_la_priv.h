@@ -218,7 +218,8 @@ struct la_scaling_reg_info vi_info[] = {
 	}
 };
 
-static int ns_per_tick = 30;
+static const int ns_per_tick = 30;
+
 /* Tegra3 MC atom size in bytes */
 static const int normal_atom_size = 16;
 #endif

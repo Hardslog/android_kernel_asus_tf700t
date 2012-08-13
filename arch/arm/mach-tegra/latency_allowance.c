@@ -147,7 +147,7 @@ int tegra_set_latency_allowance(enum tegra_la_id id,
 	VALIDATE_ID(id);
 	VALIDATE_BW(bandwidth_in_mbps);
 
-	ci = &la_info[id];
+	ci = &la_info_array[idx];
 	fifo_size_in_atoms = ci->fifo_size_in_atoms;
 
 #if HACK_LA_FIFO
