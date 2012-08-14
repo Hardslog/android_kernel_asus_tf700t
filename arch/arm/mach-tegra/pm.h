@@ -83,6 +83,7 @@ struct tegra_suspend_platform_data {
 	unsigned int lp1_core_volt_low;
 	unsigned int lp1_core_volt_high;
 #endif
+
 	int cpu_wake_freq;
 };
 
