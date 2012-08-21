@@ -821,6 +821,17 @@ static int tegra_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msgs[],
 		}
 	}
 
+	/* Support I2C_M_NOSTART only if HW support continue xfer. */
+	for (i = 0; i < num - 1; i++) {
+			if ((msgs[i + 1].flags & I2C_M_NOSTART) &&
+			!i2c_dev->hw->has_continue_xfer_support) {
+			dev_err(i2c_dev->dev,
+				"mesg %d have illegal flag\n", i + 1);
+			rt_mutex_unlock(&i2c_dev->dev_lock);
+			return -EINVAL;
+		}
+	}
+
 	if (i2c_dev->last_mux != i2c_bus->mux) {
 		tegra_pinmux_set_safe_pinmux_table(i2c_dev->last_mux,
 			i2c_dev->last_mux_len);
