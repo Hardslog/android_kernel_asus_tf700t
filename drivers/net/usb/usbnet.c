@@ -1059,7 +1059,8 @@ static void tx_complete (struct urb *urb)
 	}
 
 	usb_autopm_put_interface_async(dev->intf);
-	(void) defer_bh(dev, skb, &dev->txq, tx_done);
+	entry->state = tx_done;
+	defer_bh(dev, skb, &dev->txq);
 }
 
 /*-------------------------------------------------------------------------*/
