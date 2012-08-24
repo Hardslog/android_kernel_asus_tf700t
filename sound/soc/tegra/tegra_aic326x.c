@@ -1281,8 +1281,7 @@ static __devinit int tegra_aic326x_driver_probe(struct platform_device *pdev)
 	tegra_i2s_dai_name[machine->codec_info[BT_SCO].i2s_id];
 #endif
 
-	if (machine_is_tegra_enterprise() ||
-	    machine_is_tai()) {
+	if (machine_is_tegra_enterprise()) {
 		tegra_aic326x_dai[DAI_LINK_HIFI].codec_name = "tlv320aic3262-codec";
 		tegra_aic326x_dai[DAI_LINK_VOICE_CALL].codec_name = "tlv320aic3262-codec";
 		tegra_aic326x_dai[DAI_LINK_VOICE_CALL].codec_dai_name = "aic326x-asi1";
