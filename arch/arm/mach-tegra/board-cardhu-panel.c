@@ -933,23 +933,27 @@ static struct tegra_fb_data cardhu_fb_data = {
 	.win		= 0,
 	.xres		= 1280,
 	.yres		= 800,
+
 #ifdef CONFIG_TEGRA_DC_USE_HW_BPP
 	.bits_per_pixel = -1,
 #else
 	.bits_per_pixel	= 32,
 #endif
-//	.flags		= TEGRA_FB_FLIP_ON_PROBE,
+
+	.flags		= TEGRA_FB_FLIP_ON_PROBE,
 };
 
 static struct tegra_fb_data cardhu_hdmi_fb_data = {
 	.win		= 0,
 	.xres		= 1280,
 	.yres		= 800,
+
 #ifdef CONFIG_TEGRA_DC_USE_HW_BPP
 	.bits_per_pixel = -1,
 #else
 	.bits_per_pixel	= 32,
 #endif
+
 //	.flags		= TEGRA_FB_FLIP_ON_PROBE,
 };
 
@@ -966,7 +970,7 @@ static struct tegra_fb_data cardhu_hdmi_fb_data_800_1280 = {
 	.xres		= 800,
 	.yres		= 1280,
 	.bits_per_pixel	= 32,
-//	.flags		= TEGRA_FB_FLIP_ON_PROBE,
+	.flags		= TEGRA_FB_FLIP_ON_PROBE,
 };
 
 static struct tegra_dc_out cardhu_disp2_out = {
