@@ -509,6 +509,7 @@ static int tegra_ehci_probe(struct platform_device *pdev)
 	struct resource *res;
 	struct usb_hcd *hcd;
 	struct tegra_ehci_hcd *tegra;
+	struct tegra_usb_platform_data *pdata = dev_get_platdata(&pdev->dev);
 	int err = 0;
 	int irq;
 
@@ -603,14 +604,16 @@ static int tegra_ehci_probe(struct platform_device *pdev)
 		goto fail_phy;
 	}
 
-	/*err = enable_irq_wake(tegra->irq);
-	if (err < 0) {
-		dev_warn(&pdev->dev,
-				"Couldn't enable USB host mode wakeup, irq=%d, "
-				"error=%d\n", irq, err);
-		err = 0;
-		tegra->irq = 0;
-	}*/
+	if (pdata->u_data.host.remote_wakeup_supported) {
+		err = enable_irq_wake(tegra->irq);
+		if (err < 0) {
+			dev_warn(&pdev->dev,
+					"Couldn't enable USB host mode wakeup,"
+					" irq=%d error=%d\n", irq, err);
+			err = 0;
+			tegra->irq = 0;
+		}
+	}
 
 	tegra->ehci = hcd_to_ehci(hcd);
 
@@ -685,6 +688,7 @@ static int tegra_ehci_suspend(struct platform_device *pdev, pm_message_t state)
 static int tegra_ehci_remove(struct platform_device *pdev)
 {
 	struct tegra_ehci_hcd *tegra = platform_get_drvdata(pdev);
+	struct tegra_usb_platform_data *pdata = dev_get_platdata(&pdev->dev);
 	struct usb_hcd *hcd = ehci_to_hcd(tegra->ehci);
 
 	if (tegra == NULL || hcd == NULL)
@@ -697,15 +701,8 @@ static int tegra_ehci_remove(struct platform_device *pdev)
 	}
 #endif
 
-	if (tegra->phy->inst == 2 && usb3_init == 1) {
-		free_irq(gpio_dock_in_irq, hcd);
-		usb3_ehci_handle = NULL;
-		usb3_init = 0;
-		dock_port_device = NULL;
-	}
-
-	//if (tegra->irq)
-		//disable_irq_wake(tegra->irq);
+	if (tegra->irq && pdata->u_data.host.remote_wakeup_supported)
+		disable_irq_wake(tegra->irq);
 
 	/* Make sure phy is powered ON to access USB register */
 	if(!tegra_usb_phy_hw_accessible(tegra->phy))
