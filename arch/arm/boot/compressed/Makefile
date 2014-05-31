@@ -130,13 +130,15 @@ KBSS_SZ = $(shell if $(CROSS_COMPILE)size $(obj)/../../../../vmlinux; then :; \
       else size $(obj)/../../../../vmlinux; fi | awk 'END{print $$3}')
 ifneq ($(KBSS_SZ),)
 LDFLAGS_vmlinux = --defsym _kernel_bss_size=$(KBSS_SZ)
-endif
 # Supply ZRELADDR to the decompressor via a linker symbol.
 ifneq ($(CONFIG_AUTO_ZRELADDR),y)
 LDFLAGS_vmlinux += --defsym zreladdr=$(ZRELADDR)
 endif
 ifeq ($(CONFIG_CPU_ENDIAN_BE8),y)
 LDFLAGS_vmlinux += --be8
+endif
+ifneq ($(PARAMS_PHYS),)
+LDFLAGS_vmlinux += --defsym params_phys=$(PARAMS_PHYS)
 endif
 # ?
 LDFLAGS_vmlinux += -p
