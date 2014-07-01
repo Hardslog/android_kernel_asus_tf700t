@@ -441,6 +441,7 @@ static int tegra_ehci_bus_suspend(struct usb_hcd *hcd)
 	mutex_lock(&tegra->sync_lock);
 	tegra->bus_suspended_fail = false;
 	pr_info("%s : ehci_bus_suspend +\n", __func__);
+
 	err = ehci_bus_suspend(hcd);
 	pr_info("%s : ehci_bus_suspend, err = %d -\n", __func__, err);
 	if (err)
@@ -673,15 +674,10 @@ static int tegra_ehci_suspend(struct platform_device *pdev, pm_message_t state)
 
 	pr_info("%s instance %d, bus_suspended_fail %d +\n", __func__, tegra->phy->inst, tegra->bus_suspended_fail);
 	/* bus suspend could have failed because of remote wakeup resume */
-	if (tegra->bus_suspended_fail) {
-		ret = -EBUSY;
-		pr_info("%s instance %d, ret %d-\n", __func__, tegra->phy->inst, ret);
-		return ret;
-	} else {
-		ret = tegra_usb_phy_power_off(tegra->phy);
-		pr_info("%s instance %d, ret %d-\n", __func__, tegra->phy->inst, ret);
-		return ret;
-	}
+	if (tegra->bus_suspended_fail)
+		return -EBUSY;
+	else
+		return tegra_usb_phy_power_off(tegra->phy);
 }
 #endif
 
