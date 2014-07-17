@@ -16,9 +16,9 @@
 	.align	5
 
 ENTRY(memset)
-	ands	r3, r0, #3		@ 1 unaligned?
-	mov	ip, r0			@ preserve r0 as return value
-	bne	6f			@ 1
+	ands r3, r0, #3 @ 1 unaligned?
+	mov ip, r0 @ preserve r0 as return value
+	bne 6f @ 1
 /*
  * we know that the pointer in ip is aligned to a word boundary.
  */
@@ -112,12 +112,12 @@ ENTRY(memset)
 	strneb	r1, [ip], #1
 	mov	pc, lr
 
-6:	subs	r2, r2, #4		@ 1 do we have enough
-	blt	5b			@ 1 bytes to align with?
-	cmp	r3, #2			@ 1
-	strltb	r1, [ip], #1		@ 1
-	strleb	r1, [ip], #1		@ 1
-	strb	r1, [ip], #1		@ 1
-	add	r2, r2, r3		@ 1 (r2 = r2 - (4 - r3))
-	b	1b
+6:	subs r2, r2, #4 @ 1 do we have enough
+	blt 5b @ 1 bytes to align with?
+	cmp r3, #2 @ 1
+	strltb r1, [ip], #1 @ 1
+	strleb r1, [ip], #1 @ 1
+	strb r1, [ip], #1 @ 1
+	add r2, r2, r3 @ 1 (r2 = r2 - (4 - r3))
+	b 1b
 ENDPROC(memset)
