@@ -1812,7 +1812,7 @@ int inv_mpu6050_suspend(struct mldl_cfg *mldl_cfg,
 	}
 	/* Disable irq when suspend all sensors */
 	if (sensors == INV_ALL_SENSORS) {
-		result = inv_serial_single_write(
+		result = inv_mpu6050_serial_single_write(
 			gyro_handle, mldl_cfg->mpu_chip_info->addr,
 			MPUREG_INT_ENABLE, 0);
 		if (result) {
