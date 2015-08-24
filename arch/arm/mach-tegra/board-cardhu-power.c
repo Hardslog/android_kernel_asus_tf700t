@@ -469,14 +469,6 @@ int __init cardhu_regulator_init(void)
 		pr_info("VSEL 1:0 %d%d\n",
 			tps62361_pdata.vsel1_def_state,
 			tps62361_pdata.vsel0_def_state);
-	} else if (board_info.board_id == BOARD_PM315) {
-		/* On PM315, SATA rails are on LDO1 */
-		pdata_ldo1_0.regulator.num_consumer_supplies =
-					ARRAY_SIZE(tps6591x_ldo1_supply_pm315);
-		pdata_ldo1_0.regulator.consumer_supplies =
-					tps6591x_ldo1_supply_pm315;
-		pdata_ldo2_0.regulator.num_consumer_supplies = 0;
-		pdata_ldo2_0.regulator.consumer_supplies = NULL;
 	}
 
 	if ((board_info.board_id == BOARD_E1291) &&
